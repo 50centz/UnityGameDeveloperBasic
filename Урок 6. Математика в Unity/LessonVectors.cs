@@ -47,7 +47,11 @@ namespace Sample
             Vector2 c2, float r2
         )
         {
-            var distance = Mathf.Sqrt(Mathf.Pow((c2.x - c1.x), 2) + Mathf.Pow((c2.y - c1.y), 2));
+            float dx = c2.x - c1.x;
+            dx *= dx;
+            float dy = c2.y - c1.y;
+            dy *= dy;
+            var distance = Mathf.Sqrt(dx + dy);
 
             return r2 >= distance + r1;
         }
@@ -60,20 +64,22 @@ namespace Sample
         */
         public static float PointRelativeLine(Vector2 start, Vector2 end, Vector2 point)
         {
+            Vector2 vectorAP = point - start;
+            Vector2 vectorAB = end - start;
 
-            float d = (point.x - start.x) * (end.y - start.y) - (point.y - start.y) * (end.x - start.x);
-            if (d == 0)
+            float skewProduct = SkewProduct(vectorAB, vectorAP);
+            float pointRelativeLine = skewProduct switch
             {
-                return 0f;
-            }
-            else if (d < 0)
-            {
-                return -1f;
-            }
-            else
-            {
-                return 1f;
-            }
+                > 0 => -1,
+                < 0 => 1,
+                _ => 0f
+            };
+            return pointRelativeLine;
+        }
+
+        public static float SkewProduct(Vector2 vector1, Vector2 vector2)
+        {
+            return vector1.x * vector2.y - vector1.y * vector2.x;
         }
 
 
@@ -85,15 +91,17 @@ namespace Sample
         */
         public static bool IsPointInRectangle(Vector2 start, Vector2 end, Vector2 point)
         {
-            if ((point.x <= start.x) || (point.x <= end.x) || (point.y <= start.y) || (point.y <= end.y))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return IsPointInsideOrOnRectangle(start, end, point);
+        }
 
+        private static bool IsPointInsideOrOnRectangle(Vector2 start, Vector2 end, Vector2 point)
+        {
+            float minX = Mathf.Min(start.x, end.x);
+            float maxX = Mathf.Max(start.x, end.x);
+            float minY = Mathf.Min(start.y, end.y);
+            float maxY = Mathf.Max(start.y, end.y);
+
+            return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
         }
 
         /**
@@ -121,51 +129,33 @@ namespace Sample
 
             // король может ходить на одну клетку по горизонтали, вертикали или диагонали 
             // мин число ходов равно большему из абсолютного(x2 - x1) и абсолютного(y2-y1) 
+            int startMin = Mathf.Min(start.x, start.y);
+            int startMax = Mathf.Max(start.x, start.y);
+            int endMin = Mathf.Min(end.x, end.y);
+            int endMax = Mathf.Max(end.x, end.y);
 
-            int x = start.x;
-            int y = start.y;
-            int xx = end.x;
-            int yy = end.y;
-            if (x > xx)
-            {
-                int temp = xx;
-                xx = x;
-                x = temp;
-            }
-            if (y > yy)
-            {
-                int temp = yy;
-                yy = y;
-                y = temp;
-            }
 
-            if ((x > 8) || (y > 8) || (xx > 8) || (yy > 8))
+            if ((startMin > 8) || (startMax > 8) || (endMin > 8) || (endMax > 8))
             {
                 throw new IllegalArgumentException("Invalid coordinates");
             }
 
-
-            if ((x == xx) && (y == yy))
+            if ((startMax == endMax) && (startMin == endMin))
             {
                 return 0;
             }
-            if ((xx - x) == (yy - y))
+            if (Mathf.Abs(startMax - endMax) == Mathf.Abs(startMin - endMin))
             {
-                return xx - x;
+                return Mathf.Abs(startMax - endMax);
             }
-            if ((xx - x) > (yy - y))
+            if (Mathf.Abs(startMax - endMax) > Mathf.Abs(startMin - endMin))
             {
-                return xx - x;
+                return Mathf.Abs(startMax - endMax);
             }
-            if ((xx - x) < (yy - y))
+            else
             {
-                return yy - y;
+                return Mathf.Abs(startMin - endMin);
             }
-
-            
-
-            return 0;
-
         }
 
         /**
@@ -177,7 +167,23 @@ namespace Sample
         */
         public static bool RayCircleIntersect(Ray ray, Vector3 center, float radius)
         {
-            
+            float distanceCentrPointAndRayStartPoint = Vector3.Distance(center, ray.origin);
+            if (distanceCentrPointAndRayStartPoint <= radius)
+            {
+                return false;
+            }
+
+            Vector3 pointInRay = ray.GetPoint(Mathf.Floor(Vector3.Distance(ray.origin, center)));
+            float distanePointInRayAndCentrPoint = Mathf.Floor(Vector3.Distance(pointInRay, center));
+
+            if (distanePointInRayAndCentrPoint <= radius)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
