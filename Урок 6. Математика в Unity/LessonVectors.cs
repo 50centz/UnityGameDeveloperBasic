@@ -48,10 +48,10 @@ namespace Sample
         )
         {
             float dx = c2.x - c1.x;
-            dx *= dx;
+            float dx2 = dx * dx;
             float dy = c2.y - c1.y;
-            dy *= dy;
-            var distance = Mathf.Sqrt(dx + dy);
+            float dy2 = dy * dy;
+            var distance = Mathf.Sqrt(dx2 + dy2);
 
             return r2 >= distance + r1;
         }
@@ -129,33 +129,40 @@ namespace Sample
 
             // король может ходить на одну клетку по горизонтали, вертикали или диагонали 
             // мин число ходов равно большему из абсолютного(x2 - x1) и абсолютного(y2-y1) 
-            int startMin = Mathf.Min(start.x, start.y);
-            int startMax = Mathf.Max(start.x, start.y);
-            int endMin = Mathf.Min(end.x, end.y);
-            int endMax = Mathf.Max(end.x, end.y);
 
+            int result = 0;
 
-            if ((startMin > 8) || (startMax > 8) || (endMin > 8) || (endMax > 8))
-            {
-                throw new IllegalArgumentException("Invalid coordinates");
-            }
+            CoordinatesIsCorrect(start, end);
+            int absX = (int)MathF.Abs(start.x - end.x);
+            int absY = (int)MathF.Abs(start.y - end.y);
 
-            if ((startMax == endMax) && (startMin == endMin))
+            if ((start.x == end.x) && (start.y == end.y))
             {
                 return 0;
             }
-            if (Mathf.Abs(startMax - endMax) == Mathf.Abs(startMin - endMin))
-            {
-                return Mathf.Abs(startMax - endMax);
-            }
-            if (Mathf.Abs(startMax - endMax) > Mathf.Abs(startMin - endMin))
-            {
-                return Mathf.Abs(startMax - endMax);
-            }
             else
             {
-                return Mathf.Abs(startMin - endMin);
+                return result = NumberMoves(absX, absY);
             }
+        }
+
+        public static int NumberMoves(int start, int end)
+        {
+            if (start < end)
+                return end;
+            if (start > end)
+                return start;
+            else
+                return start;
+        }
+
+        public static bool CoordinatesIsCorrect(Vector2Int start, Vector2Int end)
+        {
+            if ((start.x > 8) || (start.y > 8) || (end.x > 8) || (end.y > 8))
+            {
+                throw new IllegalArgumentException("Invalid coordinates");
+            }
+            return false;
         }
 
         /**
@@ -168,15 +175,15 @@ namespace Sample
         public static bool RayCircleIntersect(Ray ray, Vector3 center, float radius)
         {
             float distanceCentrPointAndRayStartPoint = Vector3.Distance(center, ray.origin);
-            if (distanceCentrPointAndRayStartPoint <= radius)
+            if (distanceCentrPointAndRayStartPoint < radius || Mathf.Abs(distanceCentrPointAndRayStartPoint - radius) < 0.13)
             {
                 return false;
             }
 
-            Vector3 pointInRay = ray.GetPoint(Mathf.Floor(Vector3.Distance(ray.origin, center)));
-            float distanePointInRayAndCentrPoint = Mathf.Floor(Vector3.Distance(pointInRay, center));
+            Vector3 pointInRay = ray.GetPoint(Vector3.Distance(ray.origin, center));
+            float distanePointInRayAndCentrPoint = Vector3.Distance(pointInRay, center);
 
-            if (distanePointInRayAndCentrPoint <= radius)
+            if (distanePointInRayAndCentrPoint < radius || Mathf.Abs(distanePointInRayAndCentrPoint - radius) < 0.13)
             {
                 return true;
             }
