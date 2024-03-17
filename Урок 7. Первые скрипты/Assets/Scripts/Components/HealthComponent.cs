@@ -25,18 +25,17 @@ namespace Sample
         public void TakeDamage(int damage)
         {
             //TODO: Реализовать получение урона для параметра health, минимальное значение здоровья равно нулю
-            health -= damage;
+            health = health - damage;
             if (health < 0)
             {
                 health = 0;
             }
-            
         }
 
         public void RestoreHitPoints(int range)
         {
             //TODO: Реализовать восстановление здоровья для параметра health, макс. значение здоровья равно maxHealth.
-            health += range;
+            health = health + range;
             if (health > maxHealth)
             {
                 health = maxHealth;

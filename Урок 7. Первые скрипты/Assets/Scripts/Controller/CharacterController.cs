@@ -4,17 +4,30 @@ namespace Sample
 {
     public sealed class CharacterController : MonoBehaviour
     {
-        private float _speed = 50f;
-        private Vector3 _position;
+        private Vector3 vectorMove;
+
+        [SerializeField] private MoveComponent _moveComponent;
+        [SerializeField] private RotationComponent _rotationComponent;
+        private float _rotationY;
+
+        private void Awake()
+        {
+            Debug.Log($"[{_moveComponent}]");
+            if (!_moveComponent)
+            {
+                throw new NotImplementedException($"[CharacterController:] {gameObject.name}");
+            }
+
+        }
 
         private void Update()
         {
             //TODO:
             //Реализовать перемещение и поворот в нужную сторону с помощью нажатия WASD или стрелочек на клавиатуре
 
-            _position = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-            transform.position += _position * Time.deltaTime * _speed;
+            vectorMove = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            _moveComponent.MoveDirection = vectorMove;
+            _rotationComponent.RotationDirection = new Vector3(Input.GetAxis("Horizontal"), 0, 0);
 
         }
     }

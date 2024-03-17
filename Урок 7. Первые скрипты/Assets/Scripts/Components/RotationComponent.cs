@@ -4,6 +4,7 @@ namespace Sample
 {
     public sealed class RotationComponent : MonoBehaviour
     {
+        private float _step;
         public float RotationSpeed
         {
             get => this.rotationSpeed;
@@ -28,7 +29,19 @@ namespace Sample
             //Quaternion.RotateTowards, Quaternion.LookRotation и
             //параметров rotationSpeed, rotationDirection и Time.deltaTime;
             //если направление перемещения ноль, когда не нажата ни одна из клавиш (WASD),
-			//то поворот происходить не должен
+            //то поворот происходить не должен
+
+            if (rotationDirection == Vector3.zero)
+            {
+                return;
+            }
+
+            _step = rotationSpeed * Time.deltaTime;
+            Quaternion currentRotation = transform.rotation;
+            Quaternion targetRotation = Quaternion.LookRotation(rotationDirection, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(currentRotation, targetRotation, _step);
+
         }
     }
 }
