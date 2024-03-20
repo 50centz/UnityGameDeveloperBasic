@@ -13,29 +13,18 @@ namespace Sample
             //TODO:
             //Реализовать вращение персонажа в том же направлении, куда и двигается
 
-
-            // Это задание не совсем понял что нужно сделать )) это чтоб он вращался как юла ?? 
+            _rotationComponent.RotationDirection = _moveComponent.MoveDirection;
 
             //TODO:
             //Реализовать условие перемещения и поворота:
             //перемещаться и вращаться можно если здоровье больше нуля, иначе перемещение и вращение не происходят 
 
-            /**
 
             if (_healthComponent.Health <= 0)
             {
                 _moveComponent.enabled = false;
                 _rotationComponent.enabled = false;
             }
-            if (_healthComponent.Health > 0)
-            {
-                _moveComponent.enabled = true;
-                _rotationComponent.enabled = true;
-            }
-
-            Когда включаю этот кусок кода, то тесты не проходят )) 
-            */
-
         }
     }
 }
