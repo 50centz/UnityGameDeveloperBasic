@@ -1,0 +1,48 @@
+using UnityEngine;
+
+namespace Homework
+{
+    public sealed class RotationComponent : MonoBehaviour
+    {
+        public float RotationSpeed
+        {
+            get => this.rotationSpeed;
+            set => this.rotationSpeed = value;
+        }
+
+        public Vector3 RotationDirection
+        {
+            get => this.rotationDirection;
+            set => this.rotationDirection = value;
+        }
+        /// <summary>
+        /// Угловая скорость градусов в секунду
+        /// </summary>
+        [SerializeField]
+        private float rotationSpeed;
+
+        /// <summary>
+        /// Еденичный вектор направления, куда необходимо направить Character
+        /// </summary>
+        [SerializeField]
+        private Vector3 rotationDirection;
+
+        private void Update()
+        {
+            //TODO: Реализовать покадровый поворот через transform с помощью методов
+            //Quaternion.RotateTowards, Quaternion.LookRotation, иcпользуя
+            //параметры rotationSpeed, rotationDirection
+            //Если направление перемещения ноль, то поворот не происходит
+
+            if (this.rotationDirection == Vector3.zero)
+            {
+                return;
+            }
+
+            float deltaRotation = rotationSpeed * Time.deltaTime;
+            Quaternion currentRotation = transform.rotation;
+            Quaternion targetRotation = Quaternion.LookRotation(RotationDirection);
+            transform.rotation = Quaternion.RotateTowards(currentRotation, targetRotation, deltaRotation);
+        }
+    }
+}
